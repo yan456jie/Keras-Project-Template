@@ -9,8 +9,9 @@ def main():
     # capture the config path from the run arguments
     # then process the json configuration file
     try:
-        args = get_args()
-        config = process_config(args.config)
+        # args = get_args()
+        # config = process_config(args.config)
+        config = process_config("../configs/simple_mnist_config.json")
     except:
         print("missing or invalid arguments")
         exit(0)

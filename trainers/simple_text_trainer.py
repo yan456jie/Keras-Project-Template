@@ -3,9 +3,9 @@ import os
 from keras.callbacks import ModelCheckpoint, TensorBoard
 from comet_ml import Experiment
 
-class SimpleMnistModelTrainer(BaseTrain):
+class SimpleTextModelTrainer(BaseTrain):
     def __init__(self, model, data, config):
-        super(SimpleMnistModelTrainer, self).__init__(model, data, config)
+        super(SimpleTextModelTrainer, self).__init__(model, data, config)
         self.callbacks = []
         self.loss = []
         self.acc = []
