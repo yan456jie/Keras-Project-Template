@@ -11,7 +11,8 @@ class SimpleTextModel(BaseModel):
 
     def build_model(self):
         self.model = Sequential()
-        self.model.add(LSTM(32, input_shape=(300, 1)))
+        # input_shape=(TIME_STEPS, INPUT_SIZE)
+        self.model.add(LSTM(output_dim = 32, input_shape=(300, 1)))
         self.model.add(Dense(2, activation='softmax'))
         self.model.compile(loss='categorical_crossentropy',
                       optimizer='adam',
