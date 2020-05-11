@@ -11,7 +11,8 @@
     "batch_size": 1,
     "validation_split":0.25,
     "verbose_training": true,
-    "seq_length": 300
+    "seq_length": 300,
+    "embed_feature": 5000
   },
   "callbacks":{
     "checkpoint_monitor": "val_loss",

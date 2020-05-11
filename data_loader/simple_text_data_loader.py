@@ -42,6 +42,8 @@ class SimpleTextDataLoader(BaseDataLoader):
         label_to_id = dict(zip(labels, range(len(labels))))
         word_to_id = dict(zip(word_list, range(len(word_list))))
 
+        self.config.trainer.embed_feature = len(word_to_id)
+
         split_punc = '\t|\t'
         write_word2id(self.config.callbacks.model_dir + '/vocab', word_to_id, split_punc)
         write_word2id(self.config.callbacks.model_dir + '/label', label_to_id, split_punc)
@@ -66,3 +68,11 @@ class SimpleTextDataLoader(BaseDataLoader):
                     break
 
         return data
+
+class SimpleCnnTextDataLoader(SimpleTextDataLoader):
+    def __init__(self, config):
+        super(SimpleTextDataLoader, self).__init__(config)
+        (self.X_train, self.y_train), (self.X_test, self.y_test) = self.get_search_filter_feature()
+        # x= np.reshape(x, (batch_size , seq_len, input_dim))
+        self.X_train = numpy.reshape(self.X_train, (len(self.X_train), self.config.trainer.seq_length))
+        self.X_test = numpy.reshape(self.X_test, (len(self.X_test), self.config.trainer.seq_length))
