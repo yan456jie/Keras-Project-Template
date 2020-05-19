@@ -1,6 +1,6 @@
 from base.base_trainer import BaseTrain
 import os
-from keras.callbacks import ModelCheckpoint, TensorBoard
+from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 from comet_ml import Experiment
 
 class SimpleMnistModelTrainer(BaseTrain):

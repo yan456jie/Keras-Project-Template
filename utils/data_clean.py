@@ -20,7 +20,7 @@ stop_set = read_stop_word(base_dir + 'data/dict/stop_words.txt')
 dict_set = read_stop_word(base_dir + 'data/dict/dict.txt')
 
 # 专辑名数据清洗
-def clean_str_title(string, stop_set, dict_set):
+def clean_str_title(string):
 
     string = quanToBan(string).strip().lower()
 
@@ -51,7 +51,7 @@ def clean_str_title(string, stop_set, dict_set):
 
 
 # 评论数据清洗
-def clean_str_comm(string, stop_set):
+def clean_str_comm(string):
     string = string.strip().lower()
     string = re.sub(re.compile(r"\[[\u4E00-\u9FA5a-z]{1,4}\]"), " ", string)
     filtrate = re.compile(u'[^\u4E00-\u9FA5A-Za-z0-9_]+')  # 中文字,字母,下划线
@@ -61,13 +61,13 @@ def clean_str_comm(string, stop_set):
     return seg_content
 
 # 清洗某类数据
-def clean_calss_data(ori_list, label, stop_set, dict_set, is_comment):
+def clean_calss_data(ori_list, label, is_comment):
     res_list = []
     for sen in ori_list:
         if not is_comment:
-            word_list = clean_str_title(sen,stop_set, dict_set)
+            word_list = clean_str_title(sen)
         else:
-            word_list = clean_str_comm(sen, stop_set)
+            word_list = clean_str_comm(sen)
         word_list.insert(0,label)
         if len(word_list) > 1:
             res_list.append(word_list)
@@ -76,8 +76,8 @@ def clean_calss_data(ori_list, label, stop_set, dict_set, is_comment):
 # 数据清洗接口
 def clean_build_data(pos_data, neg_data, is_comment):
 
-    data_pos_list = clean_calss_data(pos_data, '__label__1', stop_set, dict_set, is_comment)
-    data_neg_list = clean_calss_data(neg_data, '__label__0', stop_set, dict_set, is_comment)
+    data_pos_list = clean_calss_data(pos_data, '__label__1', is_comment)
+    data_neg_list = clean_calss_data(neg_data, '__label__0', is_comment)
 
     data_pos_list.extend(data_neg_list)
     train_list, test_list, word_set = [], [],set()

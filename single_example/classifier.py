@@ -1,10 +1,10 @@
 import numpy as np
 np.random.seed(1337)  # for reproducibility
-from keras.datasets import mnist
+from tensorflow.keras.datasets import mnist
 from keras.utils import np_utils
-from keras.models import Sequential
-from keras.layers import Dense, Activation
-from keras.optimizers import RMSprop
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Activation
+from tensorflow.keras.optimizers import RMSprop
 
 """1、数据预处理
       x变成0-1之间，y进行one-hot编码

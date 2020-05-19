@@ -3,8 +3,8 @@ import csv
 import random
 import jieba  #处理中文
 from sklearn.model_selection import train_test_split
-from utils.data_clean import clean_build_data
-from utils.data_id_conv import write_word2id,process_file
+from utils.data_clean import clean_build_data,clean_str_comm,clean_calss_data
+from utils.data_id_conv import write_word2id,process_file,read_word2id
 import os
 import numpy
 
@@ -32,7 +32,7 @@ class SimpleTextDataLoader(BaseDataLoader):
         filter_comment_0_data = self.read_data_file(filter_comment_0)
 
         print('get comment data success!\npos_size = ' + str(len(filter_comment_1_data)) + '\nneg_size = ' + str(len(filter_comment_0_data)))
-        # 原始数据
+        # 原始数据（清洗、替换、分词）
         train_list, val_list, test_list, word_list = clean_build_data(filter_comment_1_data, filter_comment_0_data, "true")
         print('\ncomment_train_size = ' + str(len(train_list)) + '\ncomment_val_size = ' + str(
             len(val_list)) + '\ncomment_test_size = '
@@ -49,6 +49,7 @@ class SimpleTextDataLoader(BaseDataLoader):
         write_word2id(self.config.callbacks.model_dir + '/label', label_to_id, split_punc)
         print('\ncomment_word_id size = ' + str(len(word_to_id)) + '\ncomment_label_id_size = ' + str(len(label_to_id)))
 
+        # id表示的数据
         x_train, y_train = process_file(train_list, word_to_id, label_to_id, self.config.trainer.seq_length)
         x_val, y_val = process_file(val_list, word_to_id, label_to_id, self.config.trainer.seq_length)
 
@@ -68,6 +69,33 @@ class SimpleTextDataLoader(BaseDataLoader):
                     break
 
         return data
+
+
+class SimpleTestTextDataLoader(SimpleTextDataLoader):
+    def __init__(self, config):
+        super(SimpleTextDataLoader, self).__init__(config)
+        self.label_to_id = read_word2id(self.config.callbacks.model_dir + '/label', '\t|\t')
+        self.word_to_id = read_word2id(self.config.callbacks.model_dir + '/vocab', '\t|\t')
+
+    def get_single_feature(self, text):
+        text_list = [text]
+
+        # id表示的数据
+        x_train, y_train = self.get_list_feature(text_list)
+
+        return (x_train, y_train)
+
+    def get_list_feature(self, text_list):
+
+        # 原始数据（清洗、替换、分词）
+        res_list = clean_calss_data(text_list, '__label__1', 'true')
+
+        # id表示的数据
+        x_train, y_train = process_file(res_list, self.word_to_id, self.label_to_id, self.config.trainer.seq_length)
+        x_train = numpy.reshape(x_train, (len(x_train), self.config.trainer.seq_length, 1))
+        # y_train = numpy.reshape(y_train, (len(y_train), self.config.trainer.seq_length, 1))
+        return (x_train, y_train)
+
 
 class SimpleCnnTextDataLoader(SimpleTextDataLoader):
     def __init__(self, config):

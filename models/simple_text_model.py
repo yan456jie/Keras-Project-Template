@@ -1,10 +1,12 @@
 from base.base_model import BaseModel
-from keras.models import Sequential
-from keras.layers import Input, Dense
-from keras.layers import LSTM
-from keras.layers import Dense, Flatten, Conv1D, MaxPooling1D, Dropout, Input, concatenate
-from keras.layers.embeddings import Embedding
-from keras.models import Model
+from tensorflow import keras
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Input, Dense
+from tensorflow.keras.layers import Embedding
+from tensorflow.keras.layers import LSTM
+from tensorflow.keras.layers import Dense, Flatten, Conv1D, MaxPooling1D, Dropout, Input, concatenate
+from tensorflow.keras.models import Model
+from tensorflow.keras.models import load_model
 
 
 class SimpleLstmTextModel(BaseModel):
@@ -15,11 +17,24 @@ class SimpleLstmTextModel(BaseModel):
     def build_model(self):
         self.model = Sequential()
         # input_shape=(TIME_STEPS, INPUT_SIZE)
-        self.model.add(LSTM(output_dim = 32, input_shape=(self.config.trainer.seq_length, 1)))
+        self.model.add(LSTM(units = 32, input_shape=(self.config.trainer.seq_length, 1)))
         self.model.add(Dense(2, activation='softmax'))
         self.model.compile(loss='categorical_crossentropy',
                       optimizer='adam',
                       metrics=['accuracy'])
+
+    def save(self):
+        if self.model is None:
+            raise Exception("You have to build the model first.")
+
+        print("Saving model...")
+        self.model.save(self.config.callbacks.model_dir + '/my_model.h5')
+        print("Model saved")
+
+    def load(self):
+        print("Loading model\n")
+        self.model = load_model(self.config.callbacks.model_dir + '/my_model.h5')
+        print("Model loaded")
 
 class SimpleCnnTextModel(BaseModel):
     def __init__(self, config):

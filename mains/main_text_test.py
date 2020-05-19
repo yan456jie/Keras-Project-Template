@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
-from data_loader.simple_text_data_loader import SimpleTextDataLoader,SimpleCnnTextDataLoader
+from data_loader.simple_text_data_loader import SimpleTextDataLoader,SimpleCnnTextDataLoader,SimpleTestTextDataLoader
 from models.simple_text_model import SimpleLstmTextModel,SimpleCnnTextModel
 from trainers.simple_text_trainer import SimpleTextModelTrainer
 from utils.config import process_config
 from utils.dirs import create_dirs
 from utils.utils import get_args
+from flask import Flask
 
-def main():
+app = Flask(__name__)
+
+def test():
     # capture the config path from the run arguments
     # then process the json configuration file
     try:
@@ -22,19 +25,33 @@ def main():
     create_dirs([config.callbacks.tensorboard_log_dir, config.callbacks.checkpoint_dir, config.callbacks.model_dir])
 
     print('Create the data generator.')
-    # data_loader = SimpleTextDataLoader(config)
-    data_loader = SimpleCnnTextDataLoader(config)
+    data_loader = SimpleTextDataLoader(config)
+    # data_loader = SimpleCnnTextDataLoader(config)
 
     print('Create the model.')
-    # model = SimpleLstmTextModel(config)
-    model = SimpleCnnTextModel(config)
+    model = SimpleLstmTextModel(config)
+    # model = SimpleCnnTextModel(config)
 
-    print('Create the trainer')
-    trainer = SimpleTextModelTrainer(model.model, data_loader.get_train_data(), config)
+    model.load()
 
-    print('Start training the model.')
-    trainer.train()
+    testDataLoader = SimpleTestTextDataLoader(config)
 
+    (x_train, y_train) = testDataLoader.get_single_feature('你是什么垃圾？')
+
+    result = model.model.predict(x_train)
+
+    print(result)
+
+    result = model.model.predict_classes(x_train)
+
+    print(result)
+
+
+@app.route('/predict')
+def index():
+    return 'hello world'
 
 if __name__ == '__main__':
-    main()
+    # app.run(debug=True)
+    app.run(host='0.0.0.0', port=8000)
+    # test()

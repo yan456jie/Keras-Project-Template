@@ -1,9 +1,9 @@
 import numpy as np
 np.random.seed(1337)  # for reproducibility
 
-from keras.datasets import mnist
-from keras.models import Model
-from keras.layers import Dense, Input
+from tensorflow.keras.datasets import mnist
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Dense, Input
 import matplotlib.pyplot as plt
 
 # download the mnist to the path '~/.keras/datasets/' if it is the first time to be called
